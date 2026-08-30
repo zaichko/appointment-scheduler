@@ -6,12 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "time_slots")
+@Table(name = "time_slots", indexes = {
+        @Index(name = "idx_time_slot_doctor_start_time", columnList = "doctor_id, start_time"),
+        @Index(name = "idx_time_slot_doctor_booked_start", columnList = "doctor_id, is_booked, start_time")
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TimeSlot {
     @Id
@@ -23,10 +26,10 @@ public class TimeSlot {
     private Doctor doctor;
 
     @Column(name = "start_time",nullable = false)
-    private Instant startTime;
+    private LocalDateTime startTime;
 
     @Column(name = "end_time", nullable = false)
-    private Instant endTime;
+    private LocalDateTime endTime;
 
     @Column(name = "is_booked", nullable = false)
     private boolean isBooked;
@@ -36,8 +39,8 @@ public class TimeSlot {
 
     public TimeSlot(
             Doctor doctor,
-            Instant startTime,
-            Instant endTime
+            LocalDateTime startTime,
+            LocalDateTime endTime
     ){
         this.doctor = doctor;
         this.startTime = startTime;

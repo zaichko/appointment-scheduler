@@ -38,12 +38,11 @@ public class Appointment {
 
     public Appointment(
             User patient,
-            TimeSlot timeSlot,
-            AppointmentStatus status
+            TimeSlot timeSlot
     ){
         this.patient = patient;
         this.timeSlot = timeSlot;
-        this.status = status;
+        this.status = AppointmentStatus.SCHEDULED;
     }
 
 }

@@ -30,12 +30,11 @@ public class Speciality {
     public Speciality(
             String name,
             String code,
-            String description,
-            boolean active
+            String description
     ){
         this.name = name;
         this.code = code;
         this.description = description;
-        this.active = active;
+        this.active = true;
     }
 }
