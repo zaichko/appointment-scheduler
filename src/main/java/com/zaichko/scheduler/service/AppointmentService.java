@@ -1,20 +1,20 @@
 package com.zaichko.scheduler.service;
 
-import com.zaichko.scheduler.entity.Appointment;
-import com.zaichko.scheduler.repository.AppointmentRepository;
-import org.springframework.stereotype.Service;
+import com.zaichko.scheduler.dto.request.AppointmentRequest;
+import com.zaichko.scheduler.dto.response.AppointmentResponse;
 
 import java.util.List;
 
-@Service
-public class AppointmentService {
-    private final AppointmentRepository appointmentRepository;
+public interface AppointmentService {
+    List<AppointmentResponse> getAllAppointments();
 
-    public AppointmentService(AppointmentRepository appointmentRepository){
-        this.appointmentRepository = appointmentRepository;
-    }
+    AppointmentResponse getAppointmentById(Long id);
 
-    public List<Appointment> getAllAppointments(){
-        return appointmentRepository.findAll();
-    }
+    AppointmentResponse createAppointment(AppointmentRequest request);
+
+    AppointmentResponse cancelAppointment(AppointmentRequest request);
+
+    AppointmentResponse markCompleted(AppointmentRequest request);
+
+    AppointmentResponse hideAppointment(AppointmentRequest request);
 }
