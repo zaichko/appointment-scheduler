@@ -1,24 +1,19 @@
 package com.zaichko.scheduler.service;
 
-import com.zaichko.scheduler.entity.User;
-import com.zaichko.scheduler.repository.UserRepository;
-import org.springframework.stereotype.Service;
+import com.zaichko.scheduler.dto.request.CreateUserRequest;
+import com.zaichko.scheduler.dto.request.UpdateUserRequest;
+import com.zaichko.scheduler.dto.response.UserResponse;
 
 import java.util.List;
 
-@Service
-public class UserService {
-    private final UserRepository userRepository;
+public interface UserService {
+    List<UserResponse> getAllUsers();
 
-    public UserService(UserRepository userRepository){
-        this.userRepository = userRepository;
-    }
+    UserResponse getUserById(Long id);
 
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
-    }
+    UserResponse createUser(CreateUserRequest request);
 
-    public User create(User user){
-        return userRepository.save(user);
-    }
+    UserResponse updateUser(UpdateUserRequest request);
+
+    void deleteUserById (Long id);
 }

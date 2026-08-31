@@ -1,20 +1,21 @@
 package com.zaichko.scheduler.service;
 
-import com.zaichko.scheduler.entity.Speciality;
-import com.zaichko.scheduler.repository.SpecialityRepository;
-import org.springframework.stereotype.Service;
+import com.zaichko.scheduler.dto.request.CreateSpecialityRequest;
+import com.zaichko.scheduler.dto.request.UpdateSpecialityRequest;
+import com.zaichko.scheduler.dto.response.SpecialityResponse;
 
 import java.util.List;
 
-@Service
-public class SpecialityService {
-    private final SpecialityRepository specialityRepository;
+public interface SpecialityService {
+    List<SpecialityResponse> getAllSpecialities();
 
-    public SpecialityService(SpecialityRepository specialityRepository){
-        this.specialityRepository = specialityRepository;
-    }
+    SpecialityResponse getSpecialityById(Long id);
 
-    public List<Speciality> getAllSpecialities(){
-        return specialityRepository.findAll();
-    }
+    SpecialityResponse createSpeciality(CreateSpecialityRequest request);
+
+    SpecialityResponse updateSpeciality(UpdateSpecialityRequest request);
+
+    SpecialityResponse changeSpecialityStatus(UpdateSpecialityRequest request);
+
+    void deleteSpecialityById(Long id);
 }

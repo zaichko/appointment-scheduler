@@ -1,20 +1,22 @@
 package com.zaichko.scheduler.service;
 
-import com.zaichko.scheduler.entity.TimeSlot;
-import com.zaichko.scheduler.repository.TimeSlotRepository;
-import org.springframework.stereotype.Service;
+import com.zaichko.scheduler.dto.request.CreateTimeSlotRequest;
+import com.zaichko.scheduler.dto.request.UpdateTimeSlotRequest;
+import com.zaichko.scheduler.dto.response.TimeSlotResponse;
 
+import java.time.LocalDate;
 import java.util.List;
 
-@Service
-public class TimeSlotService {
-    private final TimeSlotRepository timeSlotRepository;
+public interface TimeSlotService {
+        List<TimeSlotResponse> getAllTimeSlots();
 
-    public TimeSlotService(TimeSlotRepository timeSlotRepository){
-        this.timeSlotRepository = timeSlotRepository;
-    }
+        TimeSlotResponse getTimeSlotById(Long id);
 
-    public List<TimeSlot> getAllTimeSlots(){
-        return timeSlotRepository.findAll();
-    }
+        List<TimeSlotResponse> getAvailableTimeSlots(Long doctorId, Long specialityId, LocalDate date);
+
+        TimeSlotResponse createTimeSlot(CreateTimeSlotRequest request);
+
+        TimeSlotResponse changeTimeInterval(UpdateTimeSlotRequest request);
+
+        void deleteById(Long id);
 }

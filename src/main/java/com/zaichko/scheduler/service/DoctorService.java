@@ -1,20 +1,22 @@
 package com.zaichko.scheduler.service;
 
-import com.zaichko.scheduler.entity.Doctor;
-import com.zaichko.scheduler.repository.DoctorRepository;
-import org.springframework.stereotype.Service;
+import com.zaichko.scheduler.dto.request.CreateDoctorRequest;
+import com.zaichko.scheduler.dto.request.UpdateDoctorRequest;
+import com.zaichko.scheduler.dto.request.UpdateDoctorSpecialitiesRequest;
+import com.zaichko.scheduler.dto.response.DoctorResponse;
 
 import java.util.List;
 
-@Service
-public class DoctorService {
-    private final DoctorRepository doctorRepository;
+public interface DoctorService {
+    List<DoctorResponse> getAllDoctors();
 
-    public DoctorService(DoctorRepository doctorRepository){
-        this.doctorRepository = doctorRepository;
-    }
+    DoctorResponse getDoctorById(Long id);
 
-    public List<Doctor> getAllDoctors(){
-        return doctorRepository.findAll();
-    }
+    DoctorResponse createDoctor(CreateDoctorRequest request);
+
+    DoctorResponse updateDoctor(UpdateDoctorRequest request);
+
+    DoctorResponse updateDoctorSpecialities(UpdateDoctorSpecialitiesRequest request);
+
+    void deleteDoctorById(Long id);
 }
