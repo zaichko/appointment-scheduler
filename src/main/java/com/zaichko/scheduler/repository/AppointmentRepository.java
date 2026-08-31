@@ -23,9 +23,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     @Query("""
             SELECT COUNT(a.id) > 0
-            FROM appointments a
-            JOIN time_slots t ON a.time_slot_id = t.id
-            WHERE t.doctor_id = :doctorId
+            FROM Appointment a
+            JOIN TimeSlot ts
+            JOIN ts.doctor d
+            WHERE d.id = :doctorId
     """)
     boolean existsByDoctorId(@Param("doctorId") Long doctorId);
 }
