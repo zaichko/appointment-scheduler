@@ -1,17 +1,13 @@
 package com.zaichko.scheduler.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.Size;
 
-@Getter
-@Setter
-@AllArgsConstructor
-public class CreateSpecialityRequest {
+public record CreateSpecialityRequest(
     @NotBlank(message = "Speciality name must not be blank.")
-    private String name;
+    String name,
 
-    private String code;
-    private String description;
-}
+    @Size(max = 5, message = "Maximum code length is 5 symbols.")
+    String code,
+    String description
+){}

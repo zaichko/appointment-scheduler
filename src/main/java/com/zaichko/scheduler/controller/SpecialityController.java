@@ -3,7 +3,7 @@ package com.zaichko.scheduler.controller;
 import com.zaichko.scheduler.dto.request.CreateSpecialityRequest;
 import com.zaichko.scheduler.dto.request.UpdateSpecialityRequest;
 import com.zaichko.scheduler.dto.response.SpecialityResponse;
-import com.zaichko.scheduler.service.impl.SpecialityServiceImpl;
+import com.zaichko.scheduler.service.SpecialityService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/specialities")
 public class SpecialityController {
-    private final SpecialityServiceImpl specialityService;
+    private final SpecialityService specialityService;
 
     @GetMapping
     public List<SpecialityResponse> getAllSpecialities(){
@@ -32,14 +32,14 @@ public class SpecialityController {
         return specialityService.createSpeciality(request);
     }
 
-    @PutMapping
-    public SpecialityResponse updateSpeciality(@Valid @RequestBody UpdateSpecialityRequest request){
-        return specialityService.updateSpeciality(request);
+    @PutMapping("/{id}")
+    public SpecialityResponse updateSpeciality(@PathVariable @Positive Long id, @Valid @RequestBody UpdateSpecialityRequest request){
+        return specialityService.updateSpeciality(id, request);
     }
 
-    @PatchMapping("/status")
-    public SpecialityResponse changeStatus(@Valid @RequestBody UpdateSpecialityRequest request){
-        return specialityService.changeSpecialityStatus(request);
+    @PatchMapping("/{id}/status")
+    public SpecialityResponse changeStatus(@PathVariable @Positive Long id){
+        return specialityService.changeSpecialityStatus(id);
     }
 
     @DeleteMapping("/{id}")

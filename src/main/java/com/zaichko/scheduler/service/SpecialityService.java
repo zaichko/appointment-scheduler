@@ -13,9 +13,9 @@ public interface SpecialityService {
 
     SpecialityResponse createSpeciality(CreateSpecialityRequest request);
 
-    SpecialityResponse updateSpeciality(UpdateSpecialityRequest request);
+    SpecialityResponse updateSpeciality(Long id, UpdateSpecialityRequest request);
 
-    SpecialityResponse changeSpecialityStatus(UpdateSpecialityRequest request);
+    SpecialityResponse changeSpecialityStatus(Long id);
 
     void deleteSpecialityById(Long id);
 }
