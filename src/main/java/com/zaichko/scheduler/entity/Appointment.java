@@ -32,7 +32,7 @@ public class Appointment {
     @Column(nullable = false)
     private AppointmentStatus status;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     private Instant createdAt;
 
