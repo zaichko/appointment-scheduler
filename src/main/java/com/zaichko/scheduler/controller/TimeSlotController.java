@@ -1,9 +1,8 @@
 package com.zaichko.scheduler.controller;
 
-import com.zaichko.scheduler.dto.request.CreateTimeSlotRequest;
-import com.zaichko.scheduler.dto.request.UpdateTimeSlotRequest;
+import com.zaichko.scheduler.dto.request.TimeSlotRequest;
 import com.zaichko.scheduler.dto.response.TimeSlotResponse;
-import com.zaichko.scheduler.service.impl.TimeSlotServiceImpl;
+import com.zaichko.scheduler.service.TimeSlotService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/time-slots")
 public class TimeSlotController {
-    private final TimeSlotServiceImpl timeSlotService;
+    private final TimeSlotService timeSlotService;
 
     @GetMapping
     public List<TimeSlotResponse> getAllSlots(){
@@ -38,18 +37,18 @@ public class TimeSlotController {
         return timeSlotService.getAvailableTimeSlots(doctorId, specialityId, date);
     }
 
-    @PostMapping
-    public TimeSlotResponse createTimeSlot(@Valid @RequestBody CreateTimeSlotRequest request){
-        return timeSlotService.createTimeSlot(request);
+    @PostMapping("/{doctorId}")
+    public TimeSlotResponse createTimeSlot(@PathVariable @Positive Long doctorId, @Valid @RequestBody TimeSlotRequest request){
+        return timeSlotService.createTimeSlot(doctorId, request);
     }
 
-    @PostMapping("/change-time")
-    public TimeSlotResponse changeTimeInterval(@Valid @RequestBody UpdateTimeSlotRequest request){
-        return timeSlotService.changeTimeInterval(request);
+    @PostMapping("/{id}/change-time")
+    public TimeSlotResponse changeTimeInterval(@PathVariable @Positive Long id,@Valid @RequestBody TimeSlotRequest request){
+        return timeSlotService.changeTimeInterval(id, request);
     }
 
     @DeleteMapping("/{id}")
     public void deleteTimeSLot(@PathVariable @Positive Long id){
-        timeSlotService.deleteById(id);
+        timeSlotService.deleteTimeSlotById(id);
     }
 }

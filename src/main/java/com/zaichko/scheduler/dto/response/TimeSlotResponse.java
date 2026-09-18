@@ -7,5 +7,5 @@ public record TimeSlotResponse(
         String doctorName,
         LocalDateTime startTime,
         LocalDateTime endTime,
-        boolean isBooked
+        boolean isAvailable
 ){}

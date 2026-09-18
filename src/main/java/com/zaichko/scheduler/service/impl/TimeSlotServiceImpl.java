@@ -1,141 +1,134 @@
 package com.zaichko.scheduler.service.impl;
 
-import com.zaichko.scheduler.dto.request.CreateTimeSlotRequest;
-import com.zaichko.scheduler.dto.request.UpdateTimeSlotRequest;
+import com.zaichko.scheduler.dto.request.TimeSlotRequest;
 import com.zaichko.scheduler.dto.response.TimeSlotResponse;
 import com.zaichko.scheduler.entity.Doctor;
 import com.zaichko.scheduler.entity.TimeSlot;
-import com.zaichko.scheduler.exception.BookedSlotException;
+import com.zaichko.scheduler.enums.AppointmentStatus;
+import com.zaichko.scheduler.exception.ConflictException;
 import com.zaichko.scheduler.exception.NotFoundException;
-import com.zaichko.scheduler.exception.TimeConflictException;
 import com.zaichko.scheduler.mapper.TimeSlotMapper;
+import com.zaichko.scheduler.repository.AppointmentRepository;
 import com.zaichko.scheduler.repository.DoctorRepository;
 import com.zaichko.scheduler.repository.TimeSlotRepository;
 import com.zaichko.scheduler.service.TimeSlotService;
-import jakarta.validation.ValidationException;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class TimeSlotServiceImpl implements TimeSlotService {
     private final TimeSlotRepository timeSlotRepository;
     private final TimeSlotMapper timeSlotMapper;
     private final DoctorRepository doctorRepository;
+    private final AppointmentRepository appointmentRepository;
 
-    @Override
-    public List<TimeSlotResponse> getAllTimeSlots(){
-        List<TimeSlot> timeSlots = timeSlotRepository.findAll();
-        if (timeSlots.isEmpty()){
-            return Collections.emptyList();
+    @Transactional(readOnly = true)
+    public boolean isSlotAvailable(Long id){
+        if (!timeSlotRepository.existsById(id)){
+            return false;
         }
 
-        ArrayList<TimeSlotResponse> timeSlotResponses = new ArrayList<>();
-
-        for (TimeSlot timeSlot : timeSlots){
-            timeSlotResponses.add(timeSlotMapper.toResponse(timeSlot));
-        }
-        return timeSlotResponses;
+        return !appointmentRepository.existsByTimeSlotIdAndStatusNot(id, AppointmentStatus.CANCELED);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<TimeSlotResponse> getAllTimeSlots(){
+        List<TimeSlot> timeSlots = timeSlotRepository.findAll();
+
+        return timeSlots.stream()
+                .map(timeSlot -> {
+                    boolean isAvailable = isSlotAvailable(timeSlot.getId());
+                    return timeSlotMapper.toResponse(timeSlot, isAvailable);
+                        })
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public TimeSlotResponse getTimeSlotById(Long id){
         TimeSlot timeSlot = timeSlotRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Time Slot not found."));
-
-        return timeSlotMapper.toResponse(timeSlot);
+        return timeSlotMapper.toResponse(timeSlot, isSlotAvailable(id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<TimeSlotResponse> getAvailableTimeSlots(Long doctorId, Long specialityId, LocalDate date){
         LocalDateTime dateStart = null;
         LocalDateTime dateEnd = null;
-
         if (date != null) {
             dateStart = date.atStartOfDay();
             dateEnd = date.plusDays(1).atStartOfDay();
         }
 
         List<TimeSlot> timeSlots = timeSlotRepository.findAvailableSlots(doctorId, specialityId, dateStart, dateEnd);
-        if (timeSlots.isEmpty()){
-            return Collections.emptyList();
-        }
 
-        ArrayList<TimeSlotResponse> timeSlotResponses = new ArrayList<>();
-
-        for (TimeSlot timeSlot : timeSlots){
-            timeSlotResponses.add(timeSlotMapper.toResponse(timeSlot));
-        }
-
-        return timeSlotResponses;
+        return timeSlots.stream()
+                .map(timeSlot -> {
+                    boolean isAvailable = isSlotAvailable(timeSlot.getId());
+                    return timeSlotMapper.toResponse(timeSlot, isAvailable);
+                })
+                .toList();
     }
 
     @Override
-    public TimeSlotResponse createTimeSlot(CreateTimeSlotRequest request){
-        Doctor doctor = doctorRepository.findById(request.getDoctorId())
+    public TimeSlotResponse createTimeSlot(Long doctorId, TimeSlotRequest request){
+        Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new NotFoundException("Doctor not found."));
 
-        if (request.getEndTime().isBefore(request.getStartTime())){
-            throw new ValidationException("Start time must be before end time.");
+        if (timeSlotRepository.existsOverlappingSlot(
+                doctorId, request.startTime(), request.endTime())){
+            throw new ConflictException("The requested time interval conflicts with an existing schedule.");
         }
 
-        if (timeSlotRepository.existsOverlappingSlot(request.getDoctorId(), request.getStartTime(), request.getEndTime())){
-            throw new TimeConflictException("The requested time interval conflicts with an existing schedule.");
-        }
+        TimeSlot timeSlot = new TimeSlot(doctor, request.startTime(), request.endTime());
+        TimeSlot savedSlot = timeSlotRepository.save(timeSlot);
 
-        TimeSlot timeSlot = new TimeSlot(doctor, request.getStartTime(), request.getEndTime());
-        timeSlotRepository.save(timeSlot);
-
-        return timeSlotMapper.toResponse(timeSlot);
+        return timeSlotMapper.toResponse(timeSlot, isSlotAvailable(savedSlot.getId()));
     }
 
     @Override
-    public TimeSlotResponse changeTimeInterval(UpdateTimeSlotRequest request){
-        TimeSlot timeSlot = timeSlotRepository.findById(request.getId())
+    public TimeSlotResponse changeTimeInterval(Long id, TimeSlotRequest request){
+        TimeSlot timeSlot = timeSlotRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Time slot not found."));
 
-        if (timeSlot.isBooked()){
-            throw new BookedSlotException("Time slot is booked, no time changes allowed.");
-        }
-
-        if (request.getEndTime().isBefore(request.getStartTime())){
-            throw new ValidationException("Start time must be before end time.");
+        if (!isSlotAvailable(id)){
+            throw new ConflictException("Time slot is booked, no time changes allowed.");
         }
 
         if (
                 timeSlotRepository.existsOverlappingSlotExcept(
                         timeSlot.getId(),
                         timeSlot.getDoctor().getId(),
-                        request.getStartTime(),
-                        request.getEndTime())
+                        request.startTime(),
+                        request.endTime())
         ) {
-            throw new TimeConflictException("The requested time interval conflicts with an existing schedule.");
+            throw new ConflictException("The requested time interval conflicts with an existing schedule.");
         }
 
-        timeSlot.setStartTime(request.getStartTime());
-        timeSlot.setEndTime(request.getEndTime());
-
+        timeSlot.setStartTime(request.startTime());
+        timeSlot.setEndTime(request.endTime());
         TimeSlot savedSlot = timeSlotRepository.save(timeSlot);
 
-        return timeSlotMapper.toResponse(savedSlot);
+        return timeSlotMapper.toResponse(savedSlot, isSlotAvailable(id));
 
     }
 
     @Override
-    public void deleteById(Long id){
-        TimeSlot timeSlot = timeSlotRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Time slot not found."));
-
-        if (timeSlot.isBooked()){
-            throw new BookedSlotException("Time slot is booked and cannot be deleted.");
+    public void deleteTimeSlotById(Long id){
+        if (!timeSlotRepository.existsById(id)){
+            throw new NotFoundException("Time slot not found.");
+        }
+        if (!isSlotAvailable(id) || appointmentRepository.existsByTimeSlotId(id)){
+            throw new ConflictException("Time slot cannot be deleted.");
         }
 
         timeSlotRepository.deleteById(id);

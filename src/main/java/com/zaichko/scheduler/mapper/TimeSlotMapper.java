@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TimeSlotMapper {
-    public TimeSlotResponse toResponse(TimeSlot timeSlot){
+    public TimeSlotResponse toResponse(TimeSlot timeSlot, boolean isAvailable){
         String doctorFullName = String.format("%s %s", timeSlot.getDoctor().getUser().getFirstName(), timeSlot.getDoctor().getUser().getLastName()).trim();
 
         return new TimeSlotResponse(
@@ -14,7 +14,7 @@ public class TimeSlotMapper {
                 doctorFullName,
                 timeSlot.getStartTime(),
                 timeSlot.getEndTime(),
-                timeSlot.isBooked()
+                isAvailable
         );
     }
 }

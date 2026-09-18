@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "time_slots", indexes = {
-        @Index(name = "idx_time_slot_doctor_start_time", columnList = "doctor_id, start_time"),
-        @Index(name = "idx_time_slot_doctor_booked_start", columnList = "doctor_id, is_booked, start_time")
+        @Index(name = "idx_time_slot_doctor_start_time", columnList = "doctor_id, start_time")
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TimeSlot {
@@ -35,7 +34,7 @@ public class TimeSlot {
     private boolean isBooked;
 
     @Version
-    private Integer version;
+    private Integer version = 0;
 
     public TimeSlot(
             Doctor doctor,
@@ -45,7 +44,6 @@ public class TimeSlot {
         this.doctor = doctor;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.isBooked = false;
     }
 
 }
