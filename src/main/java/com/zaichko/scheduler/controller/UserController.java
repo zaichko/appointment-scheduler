@@ -3,7 +3,7 @@ package com.zaichko.scheduler.controller;
 import com.zaichko.scheduler.dto.request.CreateUserRequest;
 import com.zaichko.scheduler.dto.request.UpdateUserRequest;
 import com.zaichko.scheduler.dto.response.UserResponse;
-import com.zaichko.scheduler.service.impl.UserServiceImpl;
+import com.zaichko.scheduler.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @GetMapping
     public List<UserResponse> getAllUsers(){
@@ -32,13 +32,13 @@ public class UserController {
         return userService.createUser(request);
     }
 
-    @PutMapping
-    public UserResponse updateUser(@Valid @RequestBody UpdateUserRequest request){
-        return userService.updateUser(request);
+    @PutMapping("/{id}")
+    public UserResponse updateUser(@PathVariable @Positive Long id, @Valid @RequestBody UpdateUserRequest request){
+        return userService.updateUser(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUserById(@PathVariable @Positive Long id){
+    public void deleteUser(@PathVariable @Positive Long id){
         userService.deleteUserById(id);
     }
 }
