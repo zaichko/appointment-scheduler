@@ -4,7 +4,6 @@ import java.util.List;
 
 public record DoctorResponse (
         Long id,
-        Long userId,
         String fullName,
         String email,
         Integer experience,

@@ -14,9 +14,9 @@ public interface DoctorService {
 
     DoctorResponse createDoctor(CreateDoctorRequest request);
 
-    DoctorResponse updateDoctor(UpdateDoctorRequest request);
+    DoctorResponse updateDoctor(Long id, UpdateDoctorRequest request);
 
-    DoctorResponse updateDoctorSpecialities(UpdateDoctorSpecialitiesRequest request);
+    DoctorResponse updateDoctorSpecialities(Long id, UpdateDoctorSpecialitiesRequest request);
 
     void deleteDoctorById(Long id);
 }
