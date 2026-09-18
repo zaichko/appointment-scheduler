@@ -30,13 +30,13 @@ public class SpecialityServiceImpl implements SpecialityService {
             throw new IllegalArgumentException("Speciality name must not be blank.");
         }
         if (specialityRepository.existsByName(name)) {
-            throw new IllegalArgumentException("Speciality with this name already exists.");
+            throw new ConflictException("Speciality with this name already exists.");
         }
     }
 
     private void validateCodeHelper(String code){
         if (specialityRepository.existsByCode(code)){
-            throw new IllegalArgumentException("Speciality with this code already exists.");
+            throw new ConflictException("Speciality with this code already exists.");
         }
     }
 

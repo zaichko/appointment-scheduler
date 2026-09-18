@@ -14,6 +14,7 @@ import com.zaichko.scheduler.repository.TimeSlotRepository;
 import com.zaichko.scheduler.repository.UserRepository;
 import com.zaichko.scheduler.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +51,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         User patient = userRepository.findById(request.patientId())
                 .orElseThrow(() -> new NotFoundException("User not found."));
         if (patient.getRole() != Role.PATIENT){
-            throw new UnavailableActionException("The user's role must be PATIENT.");
+            throw new AccessDeniedException("Only patients are allowed to book appointment slots.");
         }
 
         TimeSlot timeSlot = timeSlotRepository.findById(request.timeSlotId())
@@ -81,7 +82,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .orElseThrow(() -> new NotFoundException("Appointment not found."));
 
         if (appointment.getStatus() != AppointmentStatus.SCHEDULED)
-            throw new AppointmentStatusException("Appointment cannot be canceled.");
+            throw new ConflictException("Appointment cannot be canceled.");
 
         appointment.setStatus(AppointmentStatus.CANCELED);
         Appointment savedAppointment = appointmentRepository.save(appointment);
@@ -95,7 +96,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .orElseThrow(() -> new NotFoundException("Appointment not found."));
 
         if (appointment.getStatus() != AppointmentStatus.SCHEDULED){
-            throw new AppointmentStatusException("Appointment is not scheduled.");
+            throw new ConflictException("Appointment is not scheduled.");
         }
 
         appointment.setStatus(AppointmentStatus.COMPLETED);
@@ -110,7 +111,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .orElseThrow(() -> new NotFoundException("Appointment not found."));
 
         if (appointment.getStatus() != AppointmentStatus.SCHEDULED){
-            throw new AppointmentStatusException("Appointment is not scheduled.");
+            throw new ConflictException("Appointment is not scheduled.");
         }
 
         appointment.setStatus(AppointmentStatus.NO_SHOW);
