@@ -24,8 +24,8 @@ public class Appointment {
     @JoinColumn(name = "patient_id", nullable = false)
     private User patient;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "time_slot_id", unique = true, nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "time_slot_id", nullable = false)
     private TimeSlot timeSlot;
 
     @Enumerated(EnumType.STRING)

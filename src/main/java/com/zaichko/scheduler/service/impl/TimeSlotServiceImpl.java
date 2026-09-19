@@ -17,7 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -62,11 +63,11 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     @Override
     @Transactional(readOnly = true)
     public List<TimeSlotResponse> getAvailableTimeSlots(Long doctorId, Long specialityId, LocalDate date){
-        LocalDateTime dateStart = null;
-        LocalDateTime dateEnd = null;
+        OffsetDateTime dateStart = null;
+        OffsetDateTime dateEnd = null;
         if (date != null) {
-            dateStart = date.atStartOfDay();
-            dateEnd = date.plusDays(1).atStartOfDay();
+            dateStart = date.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime();
+            dateEnd = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toOffsetDateTime();
         }
 
         List<TimeSlot> timeSlots = timeSlotRepository.findAvailableSlots(doctorId, specialityId, dateStart, dateEnd);

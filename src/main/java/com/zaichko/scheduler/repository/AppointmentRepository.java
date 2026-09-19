@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
@@ -31,8 +31,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     """)
     boolean hasOverlappingAppointment(
             @Param("patientId") Long patientId,
-            @Param("newStartTime") LocalDateTime newStartTime,
-            @Param("newEndTime") LocalDateTime newEndTime
+            @Param("newStartTime") OffsetDateTime newStartTime,
+            @Param("newEndTime") OffsetDateTime newEndTime
     );
 
     boolean existsByPatientId(Long patientId);

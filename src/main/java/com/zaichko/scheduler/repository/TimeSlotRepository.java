@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
@@ -18,8 +18,8 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
     """)
     boolean existsOverlappingSlot(
             @Param("doctorId") Long doctorId,
-            @Param("newStartTime") LocalDateTime newStartTime,
-            @Param("newEndTime") LocalDateTime newEndTime
+            @Param("newStartTime") OffsetDateTime newStartTime,
+            @Param("newEndTime") OffsetDateTime newEndTime
     );
 
     @Query("""
@@ -33,8 +33,8 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
     boolean existsOverlappingSlotExcept(
             @Param("timeSlotId") Long timeSlotId,
             @Param("doctorId") Long doctorId,
-            @Param("newStartTime") LocalDateTime newStartTime,
-            @Param("newEndTime") LocalDateTime newEndTime
+            @Param("newStartTime") OffsetDateTime newStartTime,
+            @Param("newEndTime") OffsetDateTime newEndTime
     );
 
     @Query("""
@@ -53,8 +53,8 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
     List<TimeSlot> findAvailableSlots(
             @Param("doctorId") Long doctorId,
             @Param("specialityId") Long specialityId,
-            @Param("dateStart") LocalDateTime dateStart,
-            @Param("dateEnd") LocalDateTime dateEnd
+            @Param("dateStart") OffsetDateTime dateStart,
+            @Param("dateEnd") OffsetDateTime dateEnd
     );
 
     boolean existsByDoctorId(Long doctorId);
