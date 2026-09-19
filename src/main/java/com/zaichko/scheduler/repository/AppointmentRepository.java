@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.time.OffsetDateTime;
+import java.util.List;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
     Optional<Appointment> findByTimeSlotId(Long timeSlotId);
@@ -22,11 +22,24 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     boolean existsByPatientId(Long patientId);
 
     @Query("""
-            SELECT COUNT(a.id) > 0
+            SELECT CASE WHEN COUNT(a) > 0 THEN TRUE ELSE FALSE END
             FROM Appointment a
-            JOIN TimeSlot ts
-            JOIN ts.doctor d
-            WHERE d.id = :doctorId
+            WHERE a.patient.id = :patientId
+                AND a.status = 'SCHEDULED'
+                AND a.timeSlot.startTime < :newEndTime
+                AND a.timeSlot.endTime > :newStartTime
     """)
-    boolean existsByDoctorId(@Param("doctorId") Long doctorId);
+    boolean hasOverlappingAppointment(
+            @Param("patientId") Long patientId,
+            @Param("newStartTime") OffsetDateTime newStartTime,
+            @Param("newEndTime") OffsetDateTime newEndTime
+    );
+
+    boolean existsByPatientId(Long patientId);
+
+    boolean existsByTimeSlotId(Long timeSlotId);
+
+    boolean existsByTimeSlotDoctorId(Long doctorId);
+
+    boolean existsByTimeSlotIdAndStatusNot(Long timeSlotId, AppointmentStatus status);
 }

@@ -1,11 +1,11 @@
 package com.zaichko.scheduler.dto.response;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public record TimeSlotResponse(
         Long id,
         String doctorName,
-        LocalDateTime startTime,
-        LocalDateTime endTime,
-        boolean isBooked
+        OffsetDateTime startTime,
+        OffsetDateTime endTime,
+        boolean isAvailable
 ){}

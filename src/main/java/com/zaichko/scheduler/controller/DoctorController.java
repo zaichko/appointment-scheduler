@@ -4,21 +4,19 @@ import com.zaichko.scheduler.dto.request.CreateDoctorRequest;
 import com.zaichko.scheduler.dto.request.UpdateDoctorRequest;
 import com.zaichko.scheduler.dto.request.UpdateDoctorSpecialitiesRequest;
 import com.zaichko.scheduler.dto.response.DoctorResponse;
-import com.zaichko.scheduler.service.impl.DoctorServiceImpl;
+import com.zaichko.scheduler.service.DoctorService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/doctors")
+@RequiredArgsConstructor
 public class DoctorController {
-    private final DoctorServiceImpl doctorService;
-
-    public DoctorController(DoctorServiceImpl doctorService){
-        this.doctorService = doctorService;
-    }
+    private final DoctorService doctorService;
 
     @GetMapping
     public List<DoctorResponse> getAllDoctors(){
@@ -35,18 +33,18 @@ public class DoctorController {
         return doctorService.createDoctor(request);
     }
 
-    @PutMapping
-    public DoctorResponse updateDoctor(@Valid @RequestBody UpdateDoctorRequest request){
-        return doctorService.updateDoctor(request);
+    @PutMapping("/{id}")
+    public DoctorResponse updateDoctor(@PathVariable @Positive Long id, @Valid @RequestBody UpdateDoctorRequest request){
+        return doctorService.updateDoctor(id, request);
     }
 
-    @PatchMapping
-    public DoctorResponse updateDoctorSpecialities(@Valid @RequestBody UpdateDoctorSpecialitiesRequest request){
-        return doctorService.updateDoctorSpecialities(request);
+    @PatchMapping("/{id}/update_specialities")
+    public DoctorResponse updateDoctorSpecialities(@PathVariable @Positive Long id, @Valid @RequestBody UpdateDoctorSpecialitiesRequest request){
+        return doctorService.updateDoctorSpecialities(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteDoctorById(@PathVariable @Positive Long id){
+    public void deleteDoctor(@PathVariable @Positive Long id){
         doctorService.deleteDoctorById(id);
     }
 }

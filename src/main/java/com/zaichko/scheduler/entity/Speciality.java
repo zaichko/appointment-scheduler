@@ -25,7 +25,7 @@ public class Speciality {
     private String description;
 
     @Column(nullable = false)
-    private boolean active;
+    private boolean active = true;
 
     public Speciality(
             String name,
@@ -35,6 +35,5 @@ public class Speciality {
         this.name = name;
         this.code = code;
         this.description = description;
-        this.active = true;
     }
 }

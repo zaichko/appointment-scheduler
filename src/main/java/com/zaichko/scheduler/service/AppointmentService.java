@@ -1,6 +1,6 @@
 package com.zaichko.scheduler.service;
 
-import com.zaichko.scheduler.dto.request.AppointmentRequest;
+import com.zaichko.scheduler.dto.request.CreateAppointmentRequest;
 import com.zaichko.scheduler.dto.response.AppointmentResponse;
 
 import java.util.List;
@@ -10,11 +10,11 @@ public interface AppointmentService {
 
     AppointmentResponse getAppointmentById(Long id);
 
-    AppointmentResponse createAppointment(AppointmentRequest request);
+    AppointmentResponse createAppointment(CreateAppointmentRequest request);
 
-    AppointmentResponse cancelAppointment(AppointmentRequest request);
+    AppointmentResponse cancelAppointment(Long id);
 
-    AppointmentResponse markCompleted(AppointmentRequest request);
+    AppointmentResponse markCompleted(Long id);
 
-    AppointmentResponse hideAppointment(AppointmentRequest request);
+    AppointmentResponse markNoShow(Long id);
 }

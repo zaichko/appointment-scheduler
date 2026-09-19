@@ -1,22 +1,9 @@
 package com.zaichko.scheduler.dto.request;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+public record UpdateSpecialityRequest(
+    String name,
 
-@Getter
-@Setter
-@AllArgsConstructor
-public class UpdateSpecialityRequest {
-    @Positive(message = "ID must be positive.")
-    @NotNull(message = "ID must not be null.")
-    private Long id;
+    String code,
 
-    private String name;
-
-    private String code;
-
-    private String description;
-}
+    String description
+){}

@@ -19,6 +19,8 @@ public class Doctor {
     private Long id;
 
     private Integer experience;
+
+    @Column(columnDefinition = "TEXT")
     private String bio;
 
     @ManyToMany

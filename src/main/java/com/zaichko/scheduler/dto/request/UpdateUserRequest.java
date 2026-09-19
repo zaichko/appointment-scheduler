@@ -1,23 +1,16 @@
 package com.zaichko.scheduler.dto.request;
 
-import jakarta.validation.constraints.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 
-@Getter
-@Setter
-public class UpdateUserRequest {
-    @NotNull(message = "User ID must not be null.")
-    @Positive(message = "User ID must be positive.")
-    private Long id;
-
+public record UpdateUserRequest(
     @Email(message = "Incorrect format of email address.")
-    private String email;
+    String email,
 
-    private String firstName;
+    String firstName,
 
-    private String lastName;
+    String lastName,
 
     @Size(min = 8, message = "Password length must be at least 8 symbols.")
-    private String password;
-}
+    String password
+){}

@@ -8,10 +8,11 @@ import org.springframework.stereotype.Component;
 public class AppointmentMapper {
     public AppointmentResponse toResponse(Appointment appointment){
         String doctorFullName = String.format("%s %s", appointment.getTimeSlot().getDoctor().getUser().getFirstName(), appointment.getTimeSlot().getDoctor().getUser().getLastName()).trim();
+        String patientFullName = String.format("%s %s", appointment.getPatient().getFirstName(), appointment.getPatient().getLastName()).trim();
 
         return new AppointmentResponse(
                 appointment.getId(),
-                appointment.getPatient().getFirstName(),
+                patientFullName,
                 doctorFullName,
                 appointment.getTimeSlot().getStartTime(),
                 appointment.getTimeSlot().getEndTime(),
