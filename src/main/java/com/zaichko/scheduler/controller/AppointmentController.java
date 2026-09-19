@@ -41,7 +41,7 @@ public class AppointmentController {
         return appointmentService.markCompleted(id);
     }
 
-    @PatchMapping("/{id}/hide")
+    @PatchMapping("/{id}/no-show")
     public AppointmentResponse markAppointmentNoShow(@PathVariable @Positive Long id){
         return appointmentService.markNoShow(id);
     }

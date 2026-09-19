@@ -7,19 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
-    Optional<Appointment> findByTimeSlotId(Long timeSlotId);
-
-    boolean existsByPatientIdAndStatusAndTimeSlotStartTimeLessThanAndTimeSlotEndTimeGreaterThan(
-            Long patientId,
-            AppointmentStatus status,
-            LocalDateTime newStart,
-            LocalDateTime newEnd
-    );
-
-    boolean existsByPatientId(Long patientId);
 
     @Query("""
             SELECT CASE WHEN COUNT(a) > 0 THEN TRUE ELSE FALSE END
