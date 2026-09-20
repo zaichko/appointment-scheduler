@@ -76,7 +76,7 @@ CREATE TABLE time_slots (
                             CONSTRAINT fk_time_slots_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE,
                             CONSTRAINT no_overlapping_slots EXCLUDE USING gist (
                                                                                     doctor_id WITH =,
-                                                                                    tsrange(start_time, end_time) WITH &&
+                                                                                    tstzrange(start_time, end_time) WITH &&
                                                                                 )
 );
 
