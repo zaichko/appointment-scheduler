@@ -53,8 +53,9 @@ public class DoctorServiceImpl implements DoctorService {
             throw new ConflictException("User with this email already exists.");
         }
 
-        Set<Speciality> specialities = new HashSet<>(specialityRepository.findAllById(request.specialitiesId()));
-        if (specialities.size() != request.specialitiesId().size()){
+        Set<Long> requestedSpecialityIds = new HashSet<>(request.specialitiesId());
+        Set<Speciality> specialities = new HashSet<>(specialityRepository.findAllById(requestedSpecialityIds));
+        if (specialities.size() != requestedSpecialityIds.size()){
             throw new NotFoundException("One or more specialities not found.");
         }
 
