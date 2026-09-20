@@ -33,7 +33,7 @@ public class TimeSlotController {
             @RequestParam(required = false) @Positive Long doctorId,
             @RequestParam(required = false) @Positive Long specialityId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
-            ){
+    ){
         return timeSlotService.getAvailableTimeSlots(doctorId, specialityId, date);
     }
 
@@ -42,7 +42,7 @@ public class TimeSlotController {
         return timeSlotService.createTimeSlot(doctorId, request);
     }
 
-    @PostMapping("/{id}/change-time")
+    @PatchMapping("/{id}/change-time")
     public TimeSlotResponse changeTimeInterval(@PathVariable @Positive Long id,@Valid @RequestBody TimeSlotRequest request){
         return timeSlotService.changeTimeInterval(id, request);
     }
