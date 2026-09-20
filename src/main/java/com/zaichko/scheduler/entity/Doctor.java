@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.Set;
 
@@ -29,6 +30,7 @@ public class Doctor {
             joinColumns = @JoinColumn(name = "doctor_id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "speciality_id", nullable = false)
     )
+    @BatchSize(size = 20)
     private Set<Speciality> specialities;
 
     @OneToOne(fetch = FetchType.LAZY)
