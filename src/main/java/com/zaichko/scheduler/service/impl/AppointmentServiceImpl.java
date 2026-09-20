@@ -13,6 +13,7 @@ import com.zaichko.scheduler.repository.AppointmentRepository;
 import com.zaichko.scheduler.repository.TimeSlotRepository;
 import com.zaichko.scheduler.repository.UserRepository;
 import com.zaichko.scheduler.service.AppointmentService;
+import com.zaichko.scheduler.service.TimeSlotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentMapper appointmentMapper;
     private final TimeSlotRepository timeSlotRepository;
     private final UserRepository userRepository;
-    private final TimeSlotServiceImpl timeSlotService;
+    private final TimeSlotService timeSlotService;
 
     @Override
     @Transactional(readOnly = true)
@@ -48,7 +49,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public AppointmentResponse createAppointment(CreateAppointmentRequest request){
-        User patient = userRepository.findById(request.patientId())
+        User patient = userRepository.findByIdForUpdate(request.patientId())
                 .orElseThrow(() -> new NotFoundException("User not found."));
         if (patient.getRole() != Role.PATIENT){
             throw new AccessDeniedException("Only patients are allowed to book appointment slots.");
