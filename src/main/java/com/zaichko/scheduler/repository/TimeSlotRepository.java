@@ -54,8 +54,8 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
         WHERE a.id IS NULL
           AND (:doctorId IS NULL OR d.id = :doctorId)
           AND (:specialityId IS NULL OR s.id = :specialityId)
-          AND (:dateStart IS NULL OR ts.startTime >= :dateStart)
-          AND (:dateEnd IS NULL OR ts.startTime < :dateEnd)
+          AND ts.startTime >= :dateStart
+          AND ts.startTime < :dateEnd
         ORDER BY ts.startTime
     """)
     List<TimeSlot> findAvailableSlots(
