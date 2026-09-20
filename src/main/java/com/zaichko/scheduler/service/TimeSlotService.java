@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface TimeSlotService {
+     boolean isSlotAvailable(Long id);
+
      List<TimeSlotResponse> getAllTimeSlots();
 
      TimeSlotResponse getTimeSlotById(Long id);
