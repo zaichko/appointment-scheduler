@@ -18,18 +18,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
 @Transactional
 public class TimeSlotServiceImpl implements TimeSlotService {
+    private static final ZoneId CLINIC_ZONE = ZoneId.of("Asia/Almaty");
+
     private final TimeSlotRepository timeSlotRepository;
     private final TimeSlotMapper timeSlotMapper;
     private final DoctorRepository doctorRepository;
     private final AppointmentRepository appointmentRepository;
 
+    @Override
     @Transactional(readOnly = true)
     public boolean isSlotAvailable(Long id){
         if (!timeSlotRepository.existsById(id)){
@@ -43,12 +48,10 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     @Transactional(readOnly = true)
     public List<TimeSlotResponse> getAllTimeSlots(){
         List<TimeSlot> timeSlots = timeSlotRepository.findAll();
+        Set<Long> bookedSlotIds = new HashSet<>(appointmentRepository.findBookedTimeSlotIds(AppointmentStatus.CANCELED));
 
         return timeSlots.stream()
-                .map(timeSlot -> {
-                    boolean isAvailable = isSlotAvailable(timeSlot.getId());
-                    return timeSlotMapper.toResponse(timeSlot, isAvailable);
-                        })
+                .map(timeSlot -> timeSlotMapper.toResponse(timeSlot, !bookedSlotIds.contains(timeSlot.getId())))
                 .toList();
     }
 
@@ -63,20 +66,16 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     @Override
     @Transactional(readOnly = true)
     public List<TimeSlotResponse> getAvailableTimeSlots(Long doctorId, Long specialityId, LocalDate date){
-        OffsetDateTime dateStart = null;
-        OffsetDateTime dateEnd = null;
-        if (date != null) {
-            dateStart = date.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime();
-            dateEnd = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toOffsetDateTime();
+        if (date == null) {
+            throw new IllegalArgumentException("Date is required.");
         }
+        OffsetDateTime dateStart = date.atStartOfDay(CLINIC_ZONE).toOffsetDateTime();
+        OffsetDateTime dateEnd = date.plusDays(1).atStartOfDay(CLINIC_ZONE).toOffsetDateTime();
 
         List<TimeSlot> timeSlots = timeSlotRepository.findAvailableSlots(doctorId, specialityId, dateStart, dateEnd);
 
         return timeSlots.stream()
-                .map(timeSlot -> {
-                    boolean isAvailable = isSlotAvailable(timeSlot.getId());
-                    return timeSlotMapper.toResponse(timeSlot, isAvailable);
-                })
+                .map(timeSlot -> timeSlotMapper.toResponse(timeSlot, true))
                 .toList();
     }
 

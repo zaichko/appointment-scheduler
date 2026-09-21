@@ -2,6 +2,8 @@ package com.zaichko.scheduler.repository;
 
 import com.zaichko.scheduler.entity.Appointment;
 import com.zaichko.scheduler.enums.AppointmentStatus;
+import org.jspecify.annotations.NonNull;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,16 +12,10 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
-    Optional<Appointment> findByTimeSlotId(Long timeSlotId);
-
-    boolean existsByPatientIdAndStatusAndTimeSlotStartTimeLessThanAndTimeSlotEndTimeGreaterThan(
-            Long patientId,
-            AppointmentStatus status,
-            LocalDateTime newStart,
-            LocalDateTime newEnd
-    );
-
-    boolean existsByPatientId(Long patientId);
+    @Override
+    @EntityGraph(attributePaths = {"patient", "timeSlot", "timeSlot.doctor", "timeSlot.doctor.user"})
+    @NonNull
+    List<Appointment> findAll();
 
     @Query("""
             SELECT CASE WHEN COUNT(a) > 0 THEN TRUE ELSE FALSE END
@@ -34,6 +30,13 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             @Param("newStartTime") OffsetDateTime newStartTime,
             @Param("newEndTime") OffsetDateTime newEndTime
     );
+
+    @Query("""
+            SELECT DISTINCT a.timeSlot.id
+            FROM Appointment a
+            WHERE a.status <> :excludedStatus
+    """)
+    List<Long> findBookedTimeSlotIds(@Param("excludedStatus") AppointmentStatus excludedStatus);
 
     boolean existsByPatientId(Long patientId);
 
